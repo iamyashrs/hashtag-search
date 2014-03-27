@@ -1,0 +1,82 @@
+<html>
+  <head>
+    <title>Markdown Snippet</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="static/screen.css">
+  </head>
+  <body>
+    <!-- <hr> -->
+    <div class="row">
+    	<div class="col-md-4">
+    {% for i in fbdata %}
+
+    	<div class="panel panel-default">
+		<div class="panel-heading"><a href={{i['id']}}>{{i['user']}} &nbsp;&nbsp;<span class="glyphicon glyphicon-paperclip"></span></a></div>
+		<div class="panel-body">
+		{% if i['type'] == 'status' %}
+			{% if i['story'] %}
+				<strong>{{i['story']}}</strong>
+				<hr>
+			{%endif%}
+			{{i['message']}}
+		{% endif %}
+
+		{% if i['type'] == 'link' %}
+			{% if i['story'] %}
+				<strong>{{i['story']}}</strong>
+				<hr>
+			{%endif%}
+			{% if i['message'] %}
+				<em>{{i['message']}}</em>
+				<br>
+			{%endif%}
+			{% if i['link'] %}
+				<a href="{{i['link']}}">{{i['name']}}</a>
+			{%endif%}
+			{% if i['description'] %}
+				<br>
+				<pre>{{i['description']}}</pre>
+			{%endif%}
+		{% endif %}
+
+		{% if i['type'] == 'photo' %}
+			{% if i['story'] %}
+				<strong>{{i['story']}}</strong>
+				<hr>
+			{%endif%}
+			{% if i['message'] %}
+				<em>{{i['message']}}</em>
+				<br>
+			{%endif%}
+			{% if i['link'] %}
+				<a href="{{i['link']}}">{{i['name']}}</a>
+			{%endif%}
+			{% if i['description'] %}
+				<br>
+				<pre>{{i['description']}}</pre>
+			{%endif%}
+		{% endif %}
+		</div>
+		</div>
+    {% endfor %}
+</div>
+
+<div class="row">
+    	<div class="col-md-4">
+    {% for i in igdata %}
+
+    	<div class="panel panel-default">
+		<div class="panel-heading"><a href="http://instagr.am/{{i['user']}}">{{i['user']}} &nbsp;&nbsp;<span class="glyphicon glyphicon-paperclip"></span></a></div>
+		<div class="panel-body">
+		{{ i['caption']['text'] }}
+		<img src="{{i['photo']}}"></img>
+		</div>
+		</div>
+    {% endfor %}
+</div>
+
+
+</div>
+  </body>
+</html>

@@ -1,7 +1,9 @@
+import json
 import Queue
 import threading
 import requests
 from requests_oauthlib import OAuth1
+from flask import Flask, render_template
 
 def facebook(q,query):
 	app_id='APP_ID'
@@ -56,5 +58,151 @@ t1.join()
 t2.join()
 t3.join()
 
-for i in q:
-	print i.json()
+# for i in q:
+	# print i.json()
+
+# print json.dumps(q[1].json())
+
+fb = q[0].json()
+twitter = q[1].json()
+ig = q[2].json()
+# print fb
+# print ig
+fbdict = []
+instadict = []
+twitdict = []
+
+with open('fboutput.txt', 'w') as f:
+	for i in fb['data']:
+		q={}
+		f.write(json.dumps(i))
+		f.write('\n')
+		# f.write(i['link'])
+		f.write('\n')
+		f.write('http://facebook.com/'+i['id'].replace('_','/posts/'))
+		q['id']='http://facebook.com/'+i['id'].replace('_','/posts/')
+		f.write('\n')
+		if i['type']=='status':
+			f.write('status\t'+i['from']['name'].encode('utf8')+'\t'+'http://facebook.com/'+i['from']['id'].encode('utf8')+'\n')
+			try:
+				q['story']=i['story']
+				f.write(i['story'].encode('utf8') + '\n')
+			except:
+				q['story']=''
+			try:
+				q['message']=i['message']
+				f.write(i['message'].encode('utf8') + '\n')
+			except:
+				q['message']=''
+			q['type']='status'
+			q['user']=i['from']['name']
+			q['userhref']='http://facebook.com/'+i['from']['id']
+
+
+
+		elif i['type']=='link':
+			f.write('link\t'+i['from']['name'].encode('utf8')+'\t'+'http://facebook.com/'+i['from']['id'].encode('utf8')+'\n')
+			try:
+				f.write(i['story'].encode('utf8') + '\n')
+				q['story']=i['story']
+			except:
+				q['story']=''
+			try:
+				f.write(i['message'].encode('utf8') + '\n')
+				q['message']=i['message']
+			except:
+				q['message']=''
+			try:
+				f.write(i['name'].encode('utf8') + '\n')
+				q['name']=i['name']
+			except:
+				q['name']=''
+			try:
+				f.write(i['link'].encode('utf8') + '\n')
+				q['link']=i['link']
+			except:
+				q['link']=''
+			try:
+				f.write(i['description'].encode('utf8') + '\n')
+				q['description']=i['description']
+			except:
+				q['description']=''
+			q['type']='link'
+			q['user']=i['from']['name']
+			q['userhref']='http://facebook.com/'+i['from']['id']
+
+		elif i['type']=='photo':
+			f.write('photo\t'+i['from']['name'].encode('utf8')+'\t'+'http://facebook.com/'+i['from']['id'].encode('utf8')+'\n')
+			f.write(i['picture']+'\n')
+			try:
+				f.write(i['story'].encode('utf8') + '\n')
+				q['story']=i['story']
+			except:
+				q['story']=''
+			try:
+				f.write(i['message'].encode('utf8') + '\n')
+				q['message']=i['message']
+			except:
+				q['message']=''
+			try:
+				f.write(i['caption'].encode('utf8') + '\n')
+				q['caption']=i['caption']
+			except:
+				q['caption']=''
+			q['type']='photo'
+			q['user']=i['from']['name']
+			q['userhref']='http://facebook.com/'+i['from']['id']
+			q['picture']=i['picture']
+
+		elif i['type']=='video':
+			f.write('video\t'+i['from']['name'].encode('utf8')+'\t'+'http://facebook.com/'+i['from']['id'].encode('utf8')+'\n')
+			f.write(i['picture']+'\n')
+			try:
+				f.write(i['story'].encode('utf8') + '\n')
+				q['story']=i['story']
+			except:
+				q['story']=''
+			try:
+				f.write(i['message'].encode('utf8') + '\n')
+				q['message']=i['message']
+			except:
+				q['message']=''
+			try:
+				f.write(i['description'].encode('utf8') + '\n')
+				q['description']=i['description']
+			except:
+				q['description']=''
+			q['type']='video'
+			q['user']=i['from']['name']
+			q['userhref']='http://facebook.com/'+i['from']['id']
+			q['picture']=i['picture']
+
+		f.write('\n')
+		fbdict.append(q)
+	f.write('\n')
+	f.write(fb['paging']['previous'])
+	f.write('\n')
+	f.write(fb['paging']['next'])
+	f.write('\n')
+
+
+
+	for i in ig['data']:
+		q={}
+		print i
+		print i['images']['low_resolution']['url']
+		q['photo']=i['images']['low_resolution']['url']
+		q['caption']=i['caption']
+		q['user']=i['user']['username']
+		instadict.append(q)
+
+print fbdict
+app = Flask(__name__)
+@app.route('/')
+def index():
+	fbdata=fbdict
+	igdata=instadict
+	# content = Markup(markdown.markdown(content))
+	return render_template('index.html', **locals())
+
+app.run(debug=True)
