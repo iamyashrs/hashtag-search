@@ -189,12 +189,30 @@ with open('fboutput.txt', 'w') as f:
 
 	for i in ig['data']:
 		q={}
-		print i
-		print i['images']['low_resolution']['url']
+		# print i
+		# print i['images']['low_resolution']['url']
 		q['photo']=i['images']['low_resolution']['url']
-		q['caption']=i['caption']
+		try:
+			q['caption']=i['caption']
+		except:
+			q['caption']=''
 		q['user']=i['user']['username']
+		q['link']=i['link']
 		instadict.append(q)
+
+	for i in twitter['statuses']:
+		q={}
+		print i
+		q['user']=i['user']['screen_name']
+		q['text']=i['text']
+		q['id']=i['id_str']
+		try:
+			print "yep",i['entities']['media'][0]
+			q['picture']=i['entities']['media'][0]['media_url_https']
+		except:
+			q['picture']=''
+		twitdict.append(q)
+
 
 print fbdict
 app = Flask(__name__)
@@ -202,6 +220,7 @@ app = Flask(__name__)
 def index():
 	fbdata=fbdict
 	igdata=instadict
+	twdata=twitdict
 	# content = Markup(markdown.markdown(content))
 	return render_template('index.html', **locals())
 

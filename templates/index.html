@@ -12,7 +12,7 @@
     {% for i in fbdata %}
 
     	<div class="panel panel-default">
-		<div class="panel-heading"><a href={{i['id']}}>{{i['user']}} &nbsp;&nbsp;<span class="glyphicon glyphicon-paperclip"></span></a></div>
+		<div class="panel-heading"><a href="{{i['id']}}">{{i['user']}} &nbsp;&nbsp;<span class="glyphicon glyphicon-paperclip"></span></a></div>
 		<div class="panel-body">
 		{% if i['type'] == 'status' %}
 			{% if i['story'] %}
@@ -56,13 +56,16 @@
 				<br>
 				<pre>{{i['description']}}</pre>
 			{%endif%}
+			{% if i['picture'] %}
+				<br>
+				<img src="{{i['picture']}}">
+			{%endif%}
 		{% endif %}
 		</div>
 		</div>
     {% endfor %}
 </div>
 
-<div class="row">
     	<div class="col-md-4">
     {% for i in igdata %}
 
@@ -70,12 +73,28 @@
 		<div class="panel-heading"><a href="http://instagr.am/{{i['user']}}">{{i['user']}} &nbsp;&nbsp;<span class="glyphicon glyphicon-paperclip"></span></a></div>
 		<div class="panel-body">
 		{{ i['caption']['text'] }}
-		<img src="{{i['photo']}}"></img>
+		<br>
+		<a href="{{i['link']}}"><img class="ig" src="{{i['photo']}}"></a>
 		</div>
 		</div>
     {% endfor %}
 </div>
 
+<div class="col-md-4">
+    {% for i in twdata %}
+
+    	<div class="panel panel-default">
+		<div class="panel-heading"><a href="http://twitter.com/{{i['user']}}/status/{{i['id']}}">{{i['user']}} &nbsp;&nbsp;<span class="glyphicon glyphicon-paperclip"></span></a></div>
+		<div class="panel-body">
+		{{ i['text'] }}
+		{% if i['picture'] %}
+				<br>
+				<img class="ig" src="{{i['picture']}}">
+		{%endif%}
+		</div>
+		</div>
+    {% endfor %}
+</div>
 
 </div>
   </body>
