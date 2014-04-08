@@ -1,101 +1,147 @@
 <html>
-  <head>
-    <title>Markdown Snippet</title>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="static/screen.css">
-  </head>
-  <body>
-    <!-- <hr> -->
-    <div class="row">
-    	<div class="col-md-4 scroll">
-    {% for i in fbdata %}
+<head>
+	<title>Hashtag Search</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="static/screen.css">
+	<link rel="stylesheet" type="text/css" href="static/css/font-awesome.min.css">
 
-    	<div class="panel panel-default">
-		<div class="panel-heading"><a href="{{i['id']}}">{{i['user']}} &nbsp;&nbsp;<span class="glyphicon glyphicon-paperclip"></span></a></div>
-		<div class="panel-body">
-		{% if i['type'] == 'status' %}
-			{% if i['story'] %}
-				<strong>{{i['story']}}</strong>
-				<hr>
-			{%endif%}
-			{{i['message']}}
-		{% endif %}
+</head>
+<body>
 
-		{% if i['type'] == 'link' %}
-			{% if i['story'] %}
-				<strong>{{i['story']}}</strong>
-				<hr>
-			{%endif%}
-			{% if i['message'] %}
-				<em>{{i['message']}}</em>
-				<br>
-			{%endif%}
-			{% if i['link'] %}
-				<a href="{{i['link']}}">{{i['name']}}</a>
-			{%endif%}
-			{% if i['description'] %}
-				<br>
-				<pre>{{i['description']}}</pre>
-			{%endif%}
-		{% endif %}
+	<div class="container input">
 
-		{% if i['type'] == 'photo' %}
-			{% if i['story'] %}
-				<strong>{{i['story']}}</strong>
-				<hr>
-			{%endif%}
-			{% if i['message'] %}
-				<em>{{i['message']}}</em>
-				<br>
-			{%endif%}
-			{% if i['link'] %}
-				<a href="{{i['link']}}">{{i['name']}}</a>
-			{%endif%}
-			{% if i['description'] %}
-				<br>
-				<pre>{{i['description']}}</pre>
-			{%endif%}
-			{% if i['picture'] %}
-				<br>
-				<img src="{{i['picture']}}">
-			{%endif%}
-		{% endif %}
+		<form action=".">
+			<div class="input-group">
+				<span class="input-group-addon">#</span>
+				<input type="text" class="form-control" placeholder="Search" name="query" value="{% if query %}{{query}}{% endif %}">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="submit">
+						<i class="fa fa-search fa-lg"></i>
+					</button>
+				</span>
+			</div>
+		</form>
+	</div>
+	{% if query %}
+	<!-- <hr> -->
+	<div class="row">
+		<div class="col-md-4">
+			{% for i in fbdata %}
+
+			<div class="panel panel-default">
+				<div class="panel-heading fb"><a href="{{i['id']}}"><i class="fa fa-facebook"></i>{{i['user']}}</a></div>
+				<div class="panel-body">
+					{% if i['type'] == 'status' %}
+					{% if i['story'] %}
+					<strong>{{i['story']}}</strong>
+					<hr>
+					{%endif%}
+					{{i['message']}}
+					{% endif %}
+
+					{% if i['type'] == 'link' %}
+					{% if i['story'] %}
+					<strong>{{i['story']}}</strong>
+					<hr>
+					{%endif%}
+					{% if i['message'] %}
+					<em>{{i['message']}}</em>
+					<br>
+					{%endif%}
+					{% if i['link'] %}
+					<a href="{{i['link']}}">{{i['name']}}</a>
+					{%endif%}
+					{% if i['description'] %}
+					<br>
+					<pre>{{i['description']}}</pre>
+					{%endif%}
+					{% endif %}
+
+					{% if i['type'] == 'photo' %}
+					{% if i['story'] %}
+					<strong>{{i['story']}}</strong>
+					<hr>
+					{%endif%}
+					{% if i['message'] %}
+					<em>{{i['message']}}</em>
+					<br>
+					{%endif%}
+					{% if i['link'] %}
+					<a href="{{i['link']}}">{{i['name']}}</a>
+					{%endif%}
+					{% if i['description'] %}
+					<br>
+					<pre>{{i['description']}}</pre>
+					{%endif%}
+					{% if i['picture'] %}
+					<br>
+					<img src="{{i['picture']}}">
+					{%endif%}
+					{% endif %}
+
+					{% if i['type'] == 'video' %}
+					{% if i['story'] %}
+					<strong>{{i['story']}}</strong>
+					<hr>
+					{%endif%}
+					{% if i['message'] %}
+					<em>{{i['message']}}</em>
+					<br>
+					{%endif%}
+					{% if i['link'] %}
+					<a href="{{i['link']}}">{{i['name']}}</a>
+					{%endif%}
+					{% if i['description'] %}
+					<br>
+					<pre>{{i['description']}}</pre>
+					{%endif%}
+					{% if i['picture'] %}
+					<br>
+					<img src="{{i['picture']}}">
+					{%endif%}
+					{% endif %}
+				</div>
+			</div>
+			{% endfor %}
+
 		</div>
-		</div>
-    {% endfor %}
-</div>
 
-    	<div class="col-md-4">
-    {% for i in igdata %}
+		<div class="col-md-4">
+			{% for i in igdata %}
 
-    	<div class="panel panel-default">
-		<div class="panel-heading"><a href="http://instagr.am/{{i['user']}}">{{i['user']}} &nbsp;&nbsp;<span class="glyphicon glyphicon-paperclip"></span></a></div>
-		<div class="panel-body">
-		{{ i['caption']['text'] }}
-		<br>
-		<a href="{{i['link']}}"><img class="ig" src="{{i['photo']}}"></a>
+			<div class="panel panel-default">
+				<div class="panel-heading ig"><a href="http://instagr.am/{{i['user']}}"><i class="fa fa-instagram"></i>{{i['user']}}</a></div>
+				<div class="panel-body">
+					{{ i['caption']['text'] }}
+					<br>
+					<a href="{{i['link']}}"><img src="{{i['photo']}}"></a>
+				</div>
+			</div>
+			{% endfor %}
 		</div>
-		</div>
-    {% endfor %}
-</div>
 
-<div class="col-md-4">
-    {% for i in twdata %}
+		<div class="col-md-4">
+			{% for i in twdata %}
 
-    	<div class="panel panel-default">
-		<div class="panel-heading"><a href="http://twitter.com/{{i['user']}}/status/{{i['id']}}">{{i['user']}} &nbsp;&nbsp;<span class="glyphicon glyphicon-paperclip"></span></a></div>
-		<div class="panel-body">
-		{{ i['text'] }}
-		{% if i['picture'] %}
-				<br>
-				<img class="ig" src="{{i['picture']}}">
-		{%endif%}
-		</div>
-		</div>
-    {% endfor %}
-</div>
+			<div class="panel panel-default">
+				<div class="panel-heading tw"><a href="http://twitter.com/{{i['user']}}/status/{{i['id']}}">
+					<i class="fa fa-twitter"></i>{{i['user']}}</a></div>
 
-</div>
-  </body>
+				<div class="panel-body">
+					{{ i['text'] }}
+					{% if i['picture'] %}
+					<br>
+					<img class="ig" src="{{i['picture']}}">
+					{%endif%}
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+
+	</div>
+
+	{% endif %}
+
+</body>
 </html>
