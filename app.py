@@ -84,7 +84,6 @@ def get_data(query):
 			q['user']=i['from']['name']
 			q['userhref']='http://facebook.com/'+i['from']['id']
 		elif i['type']=='link':
-			from']['id'].encode('utf8')+'\n')
 			try:
 				q['story']=i['story']
 			except:
@@ -163,7 +162,6 @@ def get_data(query):
 		q['text']=i['text']
 		q['id']=i['id_str']
 		try:
-
 			q['picture']=i['entities']['media'][0]['media_url_https']
 		except:
 			q['picture']=''
