@@ -1,0 +1,9 @@
+*.pyc
+# don't include third-party dependencies.
+lib/
+!lib/README.md
+.DS_Store
+
+config.ini
+app.yaml
+appengine_config.py
