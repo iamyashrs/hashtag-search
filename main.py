@@ -2,7 +2,6 @@
 import json
 import Queue
 import threading
-# import urllib3
 import requests
 import ConfigParser
 from requests_oauthlib import OAuth1
