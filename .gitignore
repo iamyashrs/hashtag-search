@@ -7,3 +7,4 @@ lib/
 config.ini
 app.yaml
 appengine_config.py
+lib/
