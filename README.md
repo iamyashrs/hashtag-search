@@ -22,3 +22,5 @@ To use the application, create a config.ini file in the root directory of the pr
 	REDIRECTURL=
 	CODE =
 	ACCESSTOKEN=
+	[GOOGLE_PLUS]
+	KEY=
