@@ -197,3 +197,5 @@ def index():
 def fb():
     fbdata,igdata,twdata = get_data('soccer')
     return render_template('fb.html', **locals())
+
+app.run(debug=True)
