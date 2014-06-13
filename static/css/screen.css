@@ -19,6 +19,11 @@ img {
 .tw {
 	background-color: #55acee !important;
 }
+
+.gp {
+	background-color: #DD4B38 !important;
+}
+
 .panel-heading>a>i {
 	font-size: 20px;
 	vertical-align: middle;

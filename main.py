@@ -10,6 +10,7 @@ from flask import Flask, render_template, request
 def get_data(query):
     Config = ConfigParser.ConfigParser()
     Config.read("config.ini")
+	
     def facebook(q,query):
         app_id     = Config.get('Facebook','app_id')
         app_secret = Config.get('Facebook','app_secret')
@@ -41,8 +42,17 @@ def get_data(query):
         result       = requests.get(url)
         # return result
         q[2]         =result
+		
+    def googleplus(q,query):
+        key        = Config.get('GOOGLE_PLUS','KEY')
+        url        = 'https://www.googleapis.com/plus/v1/activities?query=' +query+ '&key=' +key
+        result     = requests.get(url)
+        # return result
+        q[3]       =result
+		
+		
     query = '%23'+query
-    q = [0,0,0]
+    q = [0,0,0,0]
 
     t1 = threading.Thread(target=facebook, args = (q,query))
     t1.daemon = True
@@ -50,16 +60,21 @@ def get_data(query):
 
     t2 = threading.Thread(target=twitter, args = (q,query))
     t2.daemon = True
-
     t2.start()
 
     t3 = threading.Thread(target=instagram, args = (q,query))
     t3.daemon = True
     t3.start()
 
+    t4 = threading.Thread(target=googleplus, args = (q,query))
+    t4.daemon = True
+    t4.start()
+	
     t1.join()
     t2.join()
     t3.join()
+    t4.join()
+	
 
     try :
         fb = q[0].json()
@@ -73,9 +88,16 @@ def get_data(query):
         ig = q[2].json()
     except:
         ig = {}
+    try:
+        gp = q[3].json()
+    except:
+        gp = {}
+		
     fbdict = []
     instadict = []
     twitdict = []
+	gpdict = []
+	
     for i in fb['data']:
         q={}
         q['id']='https://facebook.com/'+i['id'].replace('_','/posts/')
@@ -181,8 +203,38 @@ def get_data(query):
             q['picture']=''
         twitdict.append(q)
 
+		
+	for i in gp['items']:
+		q={}
+		q['user']=i['actor']['displayName']
+		q['user_image']=i['actor']['image']['url']
+        q['title']=i['title']
+		q['post_url']=i['url']
+		if i['object']['attachments']:
+			if i['object']['attachments'][0]['objectType']=="photo":
+				try:
+					q['photo']=i['object']['attachments'][0]['image']['url']
+				except:
+					q['photo']=''
+					
+			if i['object']['attachments'][0]['objectType']=="article":
+				try:
+					q['url']=i['object']['attachments'][0]['url']
+					q['text']=i['object']['attachments'][0]['displayName']
+				except:
+					q['url']=''
+					
+			if i['object']['attachments'][0]['objectType']=="video":
+				try:
+					q['url']=i['object']['attachments'][0]['url']
+					q['photo']=i['object']['attachments'][0]['image']['url']
+				except:
+					q['photo']=''
+					q['url']=''
+        gpdict.append(q)
 
-    return fbdict, instadict, twitdict
+    return fbdict, instadict, twitdict, gpdict
+	
 app = Flask(__name__)
 
 @app.route('/')
@@ -190,7 +242,7 @@ def index():
     query = request.args.get('query')
     if query:
         query = ''.join(e for e in query if e.isalnum())
-        fbdata,igdata,twdata = get_data(query)
+        fbdata,igdata,twdata,gpdata = get_data(query)
     return render_template('index.html', **locals())
 
 @app.route('/fb/')

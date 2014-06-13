@@ -104,6 +104,36 @@
 				</div>
 			</div>
 			{% endfor %}
+			
+			
+			{% for i in gpdata %}
+
+			<div class="panel panel-default">
+				<div class="panel-heading gp">
+					<a href="{{i['post_url']}}">
+					<i class="fa fa-facebook"></i>{{i['user']}}
+					<img style="float:right;width:25px;height:25px;" src="{{i['user_image']}}">
+					</a>
+				</div>
+				<div class="panel-body">
+					{{ i['title'] }}
+					
+					{% if i['photo'] %}
+						<br>
+						{% if i['url'] %}
+						<a href="{{i['url']}}"><img class="ig" src="{{i['photo']}}"></a>
+						{% else %}
+						<img class="ig" src="{{i['photo']}}">
+					{%endif%}
+					
+					{% if i['url'] and !i['photo'] %}
+						<a href="{{i['url']}}">{{i['text']}}</a>
+					{% endif %}
+				</div>
+			</div>
+			{% endfor %}
+			
+			
 
 		</div>
 
