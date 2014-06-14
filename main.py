@@ -8,7 +8,7 @@ from requests_oauthlib import OAuth1
 from flask import Flask, render_template, request
 
 
-def get_data(query):
+def get_data(fbs,gps,igs,tws,gns,query):
     Config = ConfigParser.ConfigParser()
     Config.read("config.ini")
 
@@ -61,52 +61,65 @@ def get_data(query):
     query = '%23' + query
     q = [0, 0, 0, 0, 0]
 
-    t1 = threading.Thread(target=facebook, args=(q, query))
-    t1.daemon = True
-    t1.start()
+    if fbs:
+        t1 = threading.Thread(target=facebook, args=(q, query))
+        t1.daemon = True
+        t1.start()
 
-    t2 = threading.Thread(target=twitter, args=(q, query))
-    t2.daemon = True
-    t2.start()
+    if tws:
+        t2 = threading.Thread(target=twitter, args=(q, query))
+        t2.daemon = True
+        t2.start()
 
-    t3 = threading.Thread(target=instagram, args=(q, query))
-    t3.daemon = True
-    t3.start()
+    if igs:
+        t3 = threading.Thread(target=instagram, args=(q, query))
+        t3.daemon = True
+        t3.start()
 
-    t4 = threading.Thread(target=googleplus, args=(q, query))
-    t4.daemon = True
-    t4.start()
+    if gps:
+        t4 = threading.Thread(target=googleplus, args=(q, query))
+        t4.daemon = True
+        t4.start()
 
-    t5 = threading.Thread(target=googlenews, args=(q, query))
-    t5.daemon = True
-    t5.start()
+    if gns:
+        t5 = threading.Thread(target=googlenews, args=(q, query))
+        t5.daemon = True
+        t5.start()
+    if fbs:
+        t1.join()
 
-    t1.join()
-    t2.join()
-    t3.join()
-    t4.join()
-    t5.join()
+    if tws:
+        t2.join()
+
+    if igs:
+        t3.join()
+
+    if gps:
+        t4.join()
+
+    if gns:
+        t5.join()
 
     try:
         fb = q[0].json()
     except:
-        fb = {}
+        fb = {'data':[]}
     try:
         twitter = q[1].json()
     except:
-        twitter = {}
+        twitter = {'statuses':[]}
     try:
         ig = q[2].json()
     except:
-        ig = {}
+        ig = {'data':[]}
     try:
         gp = q[3].json()
     except:
-        gp = {}
+        gp = {'items':[]}
     try:
         gn = q[4].json()
     except:
-        gn = {}
+        gn = {'responseStatus':0}
 
     fbdict = []
     instadict = []
@@ -273,9 +286,27 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     query = request.args.get('query')
+    query = request.args.get('query')
+    fb = request.args.get('fb')
+    gp = request.args.get('gp')
+    ig = request.args.get('ig')
+    tw = request.args.get('tw')
+    gn = request.args.get('gn')
+    total=sum(1 for e in [fb,gp,ig,tw,gn] if e)
+    if not gn:
+        if total==4: col=3; totalcol = "12"
+        elif total==3: col=4; totalcol = "12"
+        elif total==2: col=6; totalcol = "8 col-md-offset-2"
+        elif total==1: col=12; totalcol = "4 col-md-offset-4"
+    else:
+        if total==5: col=3; totalcol = "10"; ncol=2
+        elif total==4: col=4; totalcol = "9"; ncol=3
+        elif total==3: col=6; totalcol = "8"; ncol=4
+        elif total==2: col=12; totalcol = "4 col-md-offset-2"; ncol=4
+        elif total==1: col=4; totalcol = "8"; ncol='4 col-md-offset-4'
     if query:
         query = ''.join(e for e in query if e.isalnum())
-        fbdata, igdata, twdata, gpdata, gndata = get_data(query)
+        fbdata, igdata, twdata, gpdata, gndata = get_data(fb,gp,ig,tw,gn,query)
     return render_template('index.html', **locals())
 
 
