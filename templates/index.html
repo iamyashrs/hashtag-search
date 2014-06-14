@@ -124,9 +124,10 @@
 						<a href="{{i['url']}}"><img class="ig" src="{{i['photo']}}"></a>
 						{% else %}
 						<img class="ig" src="{{i['photo']}}">
-					{%endif%}
+						{%endif%}
+					{% endif %}
 					
-					{% if i['url'] and !i['photo'] %}
+					{% if i['url'] and not i['photo'] %}
 						<a href="{{i['url']}}">{{i['text']}}</a>
 					{% endif %}
 				</div>
