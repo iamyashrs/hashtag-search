@@ -7,61 +7,75 @@ import ConfigParser
 from requests_oauthlib import OAuth1
 from flask import Flask, render_template, request
 
+
 def get_data(query):
     Config = ConfigParser.ConfigParser()
     Config.read("config.ini")
-    def facebook(q,query):
-        app_id     = Config.get('Facebook','app_id')
-        app_secret = Config.get('Facebook','app_secret')
-        fields     = 'object_id,id,from,story,picture,message,type,created_time,name,link,caption,properties,to'
-        url        = 'https://graph.facebook.com/search?q='+query+'&type=post&key=value&access_token='+app_id+'|'+app_secret+'&fields='+fields
-        result     = requests.get(url)
-        # return result
-        q[0]       =result
 
-    def twitter(q,query):
-        app_key             = Config.get('Twitter','app_key')
-        app_secret          = Config.get('Twitter','app_secret')
-        access_token        = Config.get('Twitter','access_token') # TODO: Get access token from server.
-        access_token_secret = Config.get('Twitter','access_token_secret')
-        url                 = 'https://api.twitter.com/1.1/search/tweets.json?q='+query
-        auth                = OAuth1(app_key,app_secret,access_token,access_token_secret)
-        result              =  requests.get(url,auth=auth)
+    def facebook(q, query):
+        app_id = Config.get('Facebook', 'app_id')
+        app_secret = Config.get('Facebook', 'app_secret')
+        fields = 'object_id,id,from,story,picture,message,type,created_time,name,link,caption,properties,to'
+        url = 'https://graph.facebook.com/search?q=' + query + '&type=post&key=value&access_token=' + app_id + '|' + app_secret + '&fields=' + fields
+        result = requests.get(url)
         # return result
-        q[1]                =result
+        q[0] = result
 
-    def instagram(q,query):
-        CLIENTID     = Config.get('Instagram','CLIENTID')
-        CLIENTSECRET = Config.get('Instagram','CLIENTSECRET')
-        REDIRECTURL  = Config.get('Instagram','REDIRECTURL')
-        CODE         = Config.get('Instagram','CODE')
-        ACCESSTOKEN  = Config.get('Instagram','ACCESSTOKEN') # TODO : Get access token from server.
-        query        =query[3:]
-        url          = 'https://api.instagram.com/v1/tags/'+query+'/media/recent?access_token='+ACCESSTOKEN
-        result       = requests.get(url)
+    def twitter(q, query):
+        app_key = Config.get('Twitter', 'app_key')
+        app_secret = Config.get('Twitter', 'app_secret')
+        access_token = Config.get('Twitter', 'access_token')  # TODO: Get access token from server.
+        access_token_secret = Config.get('Twitter', 'access_token_secret')
+        url = 'https://api.twitter.com/1.1/search/tweets.json?q=' + query
+        auth = OAuth1(app_key, app_secret, access_token, access_token_secret)
+        result = requests.get(url, auth=auth)
         # return result
-        q[2]         =result
-    query = '%23'+query
-    q = [0,0,0]
+        q[1] = result
 
-    t1 = threading.Thread(target=facebook, args = (q,query))
+    def instagram(q, query):
+        CLIENTID = Config.get('Instagram', 'CLIENTID')
+        CLIENTSECRET = Config.get('Instagram', 'CLIENTSECRET')
+        REDIRECTURL = Config.get('Instagram', 'REDIRECTURL')
+        CODE = Config.get('Instagram', 'CODE')
+        ACCESSTOKEN = Config.get('Instagram', 'ACCESSTOKEN')  # TODO : Get access token from server.
+        query = query[3:]
+        url = 'https://api.instagram.com/v1/tags/' + query + '/media/recent?access_token=' + ACCESSTOKEN
+        result = requests.get(url)
+        # return result
+        q[2] = result
+
+    def googleplus(q, query):
+        key = Config.get('GOOGLE_PLUS', 'KEY')
+        url = 'https://www.googleapis.com/plus/v1/activities?query=' + query + '&key=' + key
+        result = requests.get(url)
+        # return result
+        q[3] = result
+
+    query = '%23' + query
+    q = [0, 0, 0, 0]
+
+    t1 = threading.Thread(target=facebook, args=(q, query))
     t1.daemon = True
     t1.start()
 
-    t2 = threading.Thread(target=twitter, args = (q,query))
+    t2 = threading.Thread(target=twitter, args=(q, query))
     t2.daemon = True
-
     t2.start()
 
-    t3 = threading.Thread(target=instagram, args = (q,query))
+    t3 = threading.Thread(target=instagram, args=(q, query))
     t3.daemon = True
     t3.start()
+
+    t4 = threading.Thread(target=googleplus, args=(q, query))
+    t4.daemon = True
+    t4.start()
 
     t1.join()
     t2.join()
     t3.join()
+    t4.join()
 
-    try :
+    try:
         fb = q[0].json()
     except:
         fb = {}
@@ -73,129 +87,169 @@ def get_data(query):
         ig = q[2].json()
     except:
         ig = {}
+    try:
+        gp = q[3].json()
+    except:
+        gp = {}
+
     fbdict = []
     instadict = []
     twitdict = []
+    gpdict = []
+
+
     for i in fb['data']:
-        q={}
-        q['id']='https://facebook.com/'+i['id'].replace('_','/posts/')
-        if i['type']=='status':
+        q = {}
+        q['id'] = 'https://facebook.com/' + i['id'].replace('_', '/posts/')
+        if i['type'] == 'status':
             try:
-                q['story']=i['story']
+                q['story'] = i['story']
             except:
-                q['story']=''
+                q['story'] = ''
             try:
-                q['message']=i['message']
+                q['message'] = i['message']
             except:
-                q['message']=''
-            q['type']='status'
-            q['user']=i['from']['name']
-            q['userhref']='https://facebook.com/'+i['from']['id']
+                q['message'] = ''
+            q['type'] = 'status'
+            q['user'] = i['from']['name']
+            q['userhref'] = 'https://facebook.com/' + i['from']['id']
 
 
 
-        elif i['type']=='link':
+        elif i['type'] == 'link':
             try:
-                q['story']=i['story']
+                q['story'] = i['story']
             except:
-                q['story']=''
+                q['story'] = ''
             try:
-                q['message']=i['message']
+                q['message'] = i['message']
             except:
-                q['message']=''
+                q['message'] = ''
             try:
-                q['name']=i['name']
+                q['name'] = i['name']
             except:
-                q['name']=''
+                q['name'] = ''
             try:
-                q['link']=i['link']
+                q['link'] = i['link']
             except:
-                q['link']=''
+                q['link'] = ''
             try:
-                q['description']=i['description']
+                q['description'] = i['description']
             except:
-                q['description']=''
-            q['type']='link'
-            q['user']=i['from']['name']
-            q['userhref']='https://facebook.com/'+i['from']['id']
+                q['description'] = ''
+            q['type'] = 'link'
+            q['user'] = i['from']['name']
+            q['userhref'] = 'https://facebook.com/' + i['from']['id']
 
-        elif i['type']=='photo':
+        elif i['type'] == 'photo':
             try:
-                q['story']=i['story']
+                q['story'] = i['story']
             except:
-                q['story']=''
+                q['story'] = ''
             try:
-                q['message']=i['message']
+                q['message'] = i['message']
             except:
-                q['message']=''
+                q['message'] = ''
             try:
-                q['caption']=i['caption']
+                q['caption'] = i['caption']
             except:
-                q['caption']=''
-            q['type']='photo'
-            q['user']=i['from']['name']
-            q['userhref']='https://facebook.com/'+i['from']['id']
-            q['picture']=i['picture']
+                q['caption'] = ''
+            q['type'] = 'photo'
+            q['user'] = i['from']['name']
+            q['userhref'] = 'https://facebook.com/' + i['from']['id']
+            q['picture'] = i['picture']
 
-        elif i['type']=='video':
+        elif i['type'] == 'video':
             try:
-                q['story']=i['story']
+                q['story'] = i['story']
             except:
-                q['story']=''
+                q['story'] = ''
             try:
-                q['message']=i['message']
+                q['message'] = i['message']
             except:
-                q['message']=''
+                q['message'] = ''
             try:
-                q['description']=i['description']
+                q['description'] = i['description']
             except:
-                q['description']=''
-            q['type']='video'
-            q['user']=i['from']['name']
-            q['userhref']='https://facebook.com/'+i['from']['id']
-            q['picture']=i['picture']
+                q['description'] = ''
+            q['type'] = 'video'
+            q['user'] = i['from']['name']
+            q['userhref'] = 'https://facebook.com/' + i['from']['id']
+            q['picture'] = i['picture']
         fbdict.append(q)
 
     try:
         for i in ig['data']:
-            q={}
-            q['photo']=i['images']['low_resolution']['url']
+            q = {}
+            q['photo'] = i['images']['low_resolution']['url']
             try:
-                q['caption']=i['caption']
+                q['caption'] = i['caption']
             except:
-                q['caption']=''
-            q['user']=i['user']['username']
-            q['link']=i['link']
+                q['caption'] = ''
+            q['user'] = i['user']['username']
+            q['link'] = i['link']
             instadict.append(q)
     except:
         pass
 
     for i in twitter['statuses']:
-        q={}
-        q['user']=i['user']['screen_name']
-        q['text']=i['text']
-        q['id']=i['id_str']
+        q = {}
+        q['user'] = i['user']['screen_name']
+        q['text'] = i['text']
+        q['id'] = i['id_str']
         try:
-            q['picture']=i['entities']['media'][0]['media_url_https']
+            q['picture'] = i['entities']['media'][0]['media_url_https']
         except:
-            q['picture']=''
+            q['picture'] = ''
         twitdict.append(q)
 
+    for i in gp['items']:
+        q = {}
+        q['user'] = i['actor']['displayName']
+        q['user_image'] = i['actor']['image']['url']
+        q['title'] = i['title']
+        q['post_url'] = i['url']
+        if i['object']['attachments']:
+            if i['object']['attachments'][0]['objectType'] == "photo":
+                try:
+                    q['photo'] = i['object']['attachments'][0]['image']['url']
+                except:
+                    q['photo'] = ''
 
-    return fbdict, instadict, twitdict
+            if i['object']['attachments'][0]['objectType'] == "article":
+                try:
+                    q['url'] = i['object']['attachments'][0]['url']
+                    q['text'] = i['object']['attachments'][0]['displayName']
+                except:
+                    q['url'] = ''
+
+            if i['object']['attachments'][0]['objectType'] == "video":
+                try:
+                    q['url'] = i['object']['attachments'][0]['url']
+                    q['photo'] = i['object']['attachments'][0]['image']['url']
+                except:
+                    q['photo'] = ''
+                    q['url'] = ''
+        gpdict.append(q)
+
+    return fbdict, instadict, twitdict, gpdict
+
 app = Flask(__name__)
+
 
 @app.route('/')
 def index():
     query = request.args.get('query')
     if query:
         query = ''.join(e for e in query if e.isalnum())
-        fbdata,igdata,twdata = get_data(query)
+        fbdata, igdata, twdata, gpdata = get_data(query)
     return render_template('index.html', **locals())
+
 
 @app.route('/fb/')
 def fb():
-    fbdata,igdata,twdata = get_data('soccer')
+    fbdata, igdata, twdata = get_data('soccer')
     return render_template('fb.html', **locals())
+
 
 app.run(debug=True)
