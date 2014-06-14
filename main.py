@@ -51,8 +51,15 @@ def get_data(query):
         # return result
         q[3] = result
 
+
+    def googlenews(q, query):
+        url = 'https://ajax.googleapis.com/ajax/services/search/news?v=1.0&rsz=8&q=' + query
+        result = requests.get(url)
+        # return result
+        q[4] = result
+
     query = '%23' + query
-    q = [0, 0, 0, 0]
+    q = [0, 0, 0, 0, 0]
 
     t1 = threading.Thread(target=facebook, args=(q, query))
     t1.daemon = True
@@ -70,10 +77,15 @@ def get_data(query):
     t4.daemon = True
     t4.start()
 
+    t5 = threading.Thread(target=googlenews, args=(q, query))
+    t5.daemon = True
+    t5.start()
+
     t1.join()
     t2.join()
     t3.join()
     t4.join()
+    t5.join()
 
     try:
         fb = q[0].json()
@@ -91,12 +103,16 @@ def get_data(query):
         gp = q[3].json()
     except:
         gp = {}
+    try:
+        gn = q[4].json()
+    except:
+        gn = {}
 
     fbdict = []
     instadict = []
     twitdict = []
     gpdict = []
-
+    gndict = []
 
     for i in fb['data']:
         q = {}
@@ -209,7 +225,7 @@ def get_data(query):
         q['user_image'] = i['actor']['image']['url']
         q['title'] = i['title']
         q['post_url'] = i['url']
-        if i['object']['attachments']:
+        if 'attachments' in i['object']:
             if i['object']['attachments'][0]['objectType'] == "photo":
                 try:
                     q['photo'] = i['object']['attachments'][0]['image']['url']
@@ -232,7 +248,24 @@ def get_data(query):
                     q['url'] = ''
         gpdict.append(q)
 
-    return fbdict, instadict, twitdict, gpdict
+    if gn['responseStatus'] == 200:
+        for i in gn['responseData']['results']:
+            q = {}
+            q['publisher'] = i['publisher']
+            q['title'] = i['titleNoFormatting']
+            q['content'] = i['content']
+            q['url'] = i['unescapedUrl']
+            q['publishedDate'] = i['publishedDate']
+            if 'image' in i:
+                try:
+                    q['image'] = i['image']['url']
+                except:
+                    q['image'] = ''
+
+            gndict.append(q)
+
+    return fbdict, instadict, twitdict, gpdict, gndict
+
 
 app = Flask(__name__)
 
@@ -242,7 +275,7 @@ def index():
     query = request.args.get('query')
     if query:
         query = ''.join(e for e in query if e.isalnum())
-        fbdata, igdata, twdata, gpdata = get_data(query)
+        fbdata, igdata, twdata, gpdata, gndata = get_data(query)
     return render_template('index.html', **locals())
 
 

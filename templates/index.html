@@ -111,7 +111,7 @@
 			<div class="panel panel-default">
 				<div class="panel-heading gp">
 					<a href="{{i['post_url']}}">
-					<i class="fa fa-facebook"></i>{{i['user']}}
+					<i class="fa fa-google-plus"></i>{{i['user']}}
 					<img style="float:right;width:25px;height:25px;" src="{{i['user_image']}}">
 					</a>
 				</div>
@@ -168,6 +168,33 @@
 				</div>
 			</div>
 			{% endfor %}
+			
+			
+			{% for i in gndata %}
+
+			<div class="panel panel-default">
+				<div class="panel-heading gn">
+					<a href="{{i['url']}}">
+					<i class="fa fa-rss-square"></i>{{i['publisher']}}
+					</a>
+				</div>
+				<div class="panel-body">
+					<a href="{{i['url']}}"><b>{{ i['title']|safe }}</b></a>
+					<p>{{ i['content']|safe }}</p>
+					
+					{% if i['image'] %}
+						<br>
+						{% if i['url'] %}
+						<a href="{{i['url']}}"><img class="ig" src="{{i['image']}}"></a>
+						{% else %}
+						<img class="ig" src="{{i['image']}}">
+						{%endif%}
+					{% endif %}
+					
+				</div>
+			</div>
+			{% endfor %}
+			
 		</div>
 
 	</div>
