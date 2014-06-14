@@ -9,7 +9,7 @@
 </head>
 <body>
 
-	<div class="container input">
+	<div class="container input {% if not query %} main {% endif %}">
 
 		<form action=".">
 			<div class="input-group">
@@ -21,155 +21,181 @@
 					</button>
 				</span>
 			</div>
+			<div class="btn-group sns" data-toggle="buttons">
+			  <label class="btn fb {%if fb or not query%}active{%endif%}">
+			    <input type="checkbox" name="fb" {%if fb or not query%}checked="true"{%endif%} > Facebook
+			  </label>
+			  <label class="btn gp {%if gp or not query%}active{%endif%}">
+			    <input type="checkbox" name="gp" {%if gp or not query%}checked="true"{%endif%} > Google+
+			  </label>
+			  <label class="btn ig {%if ig or not query%}active{%endif%}">
+			    <input type="checkbox" name="ig" {%if ig or not query%}checked="true"{%endif%} > Instagram
+			  </label>
+			  <label class="btn tw {%if tw or not query%}active{%endif%}">
+			    <input type="checkbox" name="tw" {%if tw or not query%}checked="true"{%endif%} > Twitter
+			  </label>
+			  <label class="btn gn {%if gn%}active{%endif%}">
+			    <input type="checkbox" name="gn" {%if gn%}checked="true"{%endif%}> Google News
+			  </label>
+			</div>
+
 		</form>
 	</div>
 	{% if query %}
 	<!-- <hr> -->
 	<div class="row">
-		<div class="col-md-4">
-			{% for i in fbdata %}
+		<div class="col-md-{{totalcol}} ngn">
+			<div class="row">
+				<div class="col-md-{{col}} {%if not fb %}hidden{%endif%}">
+					{% for i in fbdata %}
 
-			<div class="panel panel-default">
-				<div class="panel-heading fb"><a href="{{i['id']}}"><i class="fa fa-facebook"></i>{{i['user']}}</a></div>
-				<div class="panel-body">
-					{% if i['type'] == 'status' %}
-					{% if i['story'] %}
-					<strong>{{i['story']}}</strong>
-					<hr>
-					{%endif%}
-					{{i['message']}}
-					{% endif %}
+					<div class="panel panel-default">
+						<div class="panel-heading fb"><a href="{{i['id']}}"><i class="fa fa-facebook"></i>{{i['user']}}</a></div>
+						<div class="panel-body">
+							{% if i['type'] == 'status' %}
+							{% if i['story'] %}
+							<strong>{{i['story']}}</strong>
+							<hr>
+							{%endif%}
+							{{i['message']}}
+							{% endif %}
 
-					{% if i['type'] == 'link' %}
-					{% if i['story'] %}
-					<strong>{{i['story']}}</strong>
-					<hr>
-					{%endif%}
-					{% if i['message'] %}
-					<em>{{i['message']}}</em>
-					<br>
-					{%endif%}
-					{% if i['link'] %}
-					<a href="{{i['link']}}">{{i['name']}}</a>
-					{%endif%}
-					{% if i['description'] %}
-					<br>
-					<pre>{{i['description']}}</pre>
-					{%endif%}
-					{% endif %}
+							{% if i['type'] == 'link' %}
+							{% if i['story'] %}
+							<strong>{{i['story']}}</strong>
+							<hr>
+							{%endif%}
+							{% if i['message'] %}
+							<em>{{i['message']}}</em>
+							<br>
+							{%endif%}
+							{% if i['link'] %}
+							<a href="{{i['link']}}">{{i['name']}}</a>
+							{%endif%}
+							{% if i['description'] %}
+							<br>
+							<pre>{{i['description']}}</pre>
+							{%endif%}
+							{% endif %}
 
-					{% if i['type'] == 'photo' %}
-					{% if i['story'] %}
-					<strong>{{i['story']}}</strong>
-					<hr>
-					{%endif%}
-					{% if i['message'] %}
-					<em>{{i['message']}}</em>
-					<br>
-					{%endif%}
-					{% if i['link'] %}
-					<a href="{{i['link']}}">{{i['name']}}</a>
-					{%endif%}
-					{% if i['description'] %}
-					<br>
-					<pre>{{i['description']}}</pre>
-					{%endif%}
-					{% if i['picture'] %}
-					<br>
-					<img src="{{i['picture']}}">
-					{%endif%}
-					{% endif %}
+							{% if i['type'] == 'photo' %}
+							{% if i['story'] %}
+							<strong>{{i['story']}}</strong>
+							<hr>
+							{%endif%}
+							{% if i['message'] %}
+							<em>{{i['message']}}</em>
+							<br>
+							{%endif%}
+							{% if i['link'] %}
+							<a href="{{i['link']}}">{{i['name']}}</a>
+							{%endif%}
+							{% if i['description'] %}
+							<br>
+							<pre>{{i['description']}}</pre>
+							{%endif%}
+							{% if i['picture'] %}
+							<br>
+							<img src="{{i['picture']}}">
+							{%endif%}
+							{% endif %}
 
-					{% if i['type'] == 'video' %}
-					{% if i['story'] %}
-					<strong>{{i['story']}}</strong>
-					<hr>
-					{%endif%}
-					{% if i['message'] %}
-					<em>{{i['message']}}</em>
-					<br>
-					{%endif%}
-					{% if i['link'] %}
-					<a href="{{i['link']}}">{{i['name']}}</a>
-					{%endif%}
-					{% if i['description'] %}
-					<br>
-					<pre>{{i['description']}}</pre>
-					{%endif%}
-					{% if i['picture'] %}
-					<br>
-					<img src="{{i['picture']}}">
-					{%endif%}
-					{% endif %}
+							{% if i['type'] == 'video' %}
+							{% if i['story'] %}
+							<strong>{{i['story']}}</strong>
+							<hr>
+							{%endif%}
+							{% if i['message'] %}
+							<em>{{i['message']}}</em>
+							<br>
+							{%endif%}
+							{% if i['link'] %}
+							<a href="{{i['link']}}">{{i['name']}}</a>
+							{%endif%}
+							{% if i['description'] %}
+							<br>
+							<pre>{{i['description']}}</pre>
+							{%endif%}
+							{% if i['picture'] %}
+							<br>
+							<img src="{{i['picture']}}">
+							{%endif%}
+							{% endif %}
+						</div>
+					</div>
+					{% endfor %}
+
+				</div>
+
+				<div class="col-md-{{col}} {%if not gp %}hidden{%endif%}">
+					{% for i in gpdata %}
+
+					<div class="panel panel-default">
+						<div class="panel-heading gp">
+							<a href="{{i['post_url']}}">
+							<i class="fa fa-google-plus"></i>{{i['user']}}
+							</a>
+						</div>
+						<div class="panel-body">
+							{{ i['title'] }}
+
+							{% if i['photo'] %}
+								<br>
+								{% if i['url'] %}
+								<a href="{{i['url']}}"><img class="ig" src="{{i['photo']}}"></a>
+								{% else %}
+								<img class="ig" src="{{i['photo']}}">
+								{%endif%}
+							{% endif %}
+
+							{% if i['url'] and not i['photo'] %}
+								<a href="{{i['url']}}">{{i['text']}}</a>
+							{% endif %}
+						</div>
+					</div>
+					{% endfor %}
+
+
+
+				</div>
+
+				<div class="col-md-{{col}} {%if not ig %}hidden{%endif%}">
+					{% for i in igdata %}
+
+					<div class="panel panel-default">
+						<div class="panel-heading ig"><a href="http://instagr.am/{{i['user']}}"><i class="fa fa-instagram"></i>{{i['user']}}</a></div>
+						<div class="panel-body">
+							{{ i['caption']['text'] }}
+							<br>
+							<a href="{{i['link']}}"><img src="{{i['photo']}}"></a>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+
+				<div class="col-md-{{col}} {%if not tw %}hidden{%endif%}">
+					{% for i in twdata %}
+
+					<div class="panel panel-default">
+						<div class="panel-heading tw"><a href="http://twitter.com/{{i['user']}}/status/{{i['id']}}">
+							<i class="fa fa-twitter"></i>{{i['user']}}</a></div>
+
+						<div class="panel-body">
+							{{ i['text'] }}
+							{% if i['picture'] %}
+							<br>
+							<img class="ig" src="{{i['picture']}}">
+							{%endif%}
+						</div>
+					</div>
+					{% endfor %}
+
 				</div>
 			</div>
-			{% endfor %}
-			
-			
-			{% for i in gpdata %}
-
-			<div class="panel panel-default">
-				<div class="panel-heading gp">
-					<a href="{{i['post_url']}}">
-					<i class="fa fa-google-plus"></i>{{i['user']}}
-					<img style="float:right;width:25px;height:25px;" src="{{i['user_image']}}">
-					</a>
-				</div>
-				<div class="panel-body">
-					{{ i['title'] }}
-					
-					{% if i['photo'] %}
-						<br>
-						{% if i['url'] %}
-						<a href="{{i['url']}}"><img class="ig" src="{{i['photo']}}"></a>
-						{% else %}
-						<img class="ig" src="{{i['photo']}}">
-						{%endif%}
-					{% endif %}
-					
-					{% if i['url'] and not i['photo'] %}
-						<a href="{{i['url']}}">{{i['text']}}</a>
-					{% endif %}
-				</div>
-			</div>
-			{% endfor %}
-			
-			
-
 		</div>
 
-		<div class="col-md-4">
-			{% for i in igdata %}
+		<div class="{% if gn %}col-md-{{ncol}}{% else %}col-md-0 hidden{%endif%}">
 
-			<div class="panel panel-default">
-				<div class="panel-heading ig"><a href="http://instagr.am/{{i['user']}}"><i class="fa fa-instagram"></i>{{i['user']}}</a></div>
-				<div class="panel-body">
-					{{ i['caption']['text'] }}
-					<br>
-					<a href="{{i['link']}}"><img src="{{i['photo']}}"></a>
-				</div>
-			</div>
-			{% endfor %}
-		</div>
-
-		<div class="col-md-4">
-			{% for i in twdata %}
-
-			<div class="panel panel-default">
-				<div class="panel-heading tw"><a href="http://twitter.com/{{i['user']}}/status/{{i['id']}}">
-					<i class="fa fa-twitter"></i>{{i['user']}}</a></div>
-
-				<div class="panel-body">
-					{{ i['text'] }}
-					{% if i['picture'] %}
-					<br>
-					<img class="ig" src="{{i['picture']}}">
-					{%endif%}
-				</div>
-			</div>
-			{% endfor %}
-			
-			
 			{% for i in gndata %}
 
 			<div class="panel panel-default">
@@ -181,7 +207,7 @@
 				<div class="panel-body">
 					<a href="{{i['url']}}"><b>{{ i['title']|safe }}</b></a>
 					<p>{{ i['content']|safe }}</p>
-					
+
 					{% if i['image'] %}
 						<br>
 						{% if i['url'] %}
@@ -190,16 +216,28 @@
 						<img class="ig" src="{{i['image']}}">
 						{%endif%}
 					{% endif %}
-					
+
 				</div>
 			</div>
 			{% endfor %}
-			
+
 		</div>
 
 	</div>
 
 	{% endif %}
+	<script type="text/javascript" src="static/js/jquery.min.js"></script>
+	<script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="static/js/main.js"></script>
+
+	<script>
+
+
+$( ".form-control" ).focus(function() {
+  $(".sns").css("height","48px")
+  $(".sns").css("margin-top","40px")
+});
+	</script>
 
 </body>
 </html>
