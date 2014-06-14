@@ -1,13 +1,20 @@
 body {
-	margin: 20px auto;
-	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px;
+	/*max-width: 1200px;*/
 	background-color: #eee;
+}
+.row {
+	margin: 0;
 }
 
 img {
 	width: 100%;
 }
 
+.fb, .ig, .tw, .gp {
+	color: #fff;
+}
 .fb {
 	background-color: #3b5998 !important;
 }
@@ -21,16 +28,49 @@ img {
 }
 
 .gp {
-	background-color: #DD4B38 !important;
+	background-color: #DD4B39 !important;
 }
-
 
 .gn {
 	background-color: #FFEA00 !important;
+	color: #222 !important;
 }
 
 .gn > a {
 	color: #000 !important;
+}
+.sns > .btn {
+	opacity: 0.25;
+	bottom: none;
+}
+.btn:hover {
+	opacity: 1;
+	color: #fff;
+}
+.btn:active, .btn.active {
+	/*border-width: 2px;*/
+	opacity: 1;
+}
+.btn-group>.btn:first-child, .btn-group>.btn:last-child {
+	border-radius: 0;
+}
+
+.col-md-2, .col-md-4, .col-md-3, .col-md-10, .col-md-9, .col-md-8 {
+	/*padding-left: 0;*/
+	/*margin: -0.1;*/
+}
+.ngn {
+	padding: 0;
+}
+
+.panel {
+	border-radius: 0;
+	/*margin: 0;*/
+	/*border: 1px;*/
+	margin-left: -1px;
+}
+.panel-heading {
+	border-radius: 0;
 }
 
 .panel-heading>a>i {
@@ -61,15 +101,30 @@ form, form div { display: inline; }
 	width: 85px;
 }
 
-.btn-default:hover {
+.btn-default:hover,.btn-default:focus {
 	background-color: #55f;
 	color: #fff;
 }
 
 .input {
-	max-width: 400px;
+	max-width: 600px;
+	text-align: center;
 	margin-bottom: 40px;
-	margin-top: 40px;
+	margin-top: 20px;
+}
+.sns {
+	text-align: center;
+	margin-top: 0px;
+	height: 0px;
+	overflow: hidden;
+	-moz-transition: all .5s ease-in-out;
+  -webkit-transition: all .5s ease-in-out;
+  -o-transition: all .5s ease-in-out;
+  -ms-transition: all .5s ease-in-out;
+  transition: all .5s ease-in-out;
+}
+.main {
+	margin-top: 200px;
 }
 .panel-body {
 	overflow: auto;
