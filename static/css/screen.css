@@ -129,3 +129,6 @@ form, form div { display: inline; }
 .panel-body {
 	overflow: auto;
 }
+.hashtag {
+	font-weight: bold;
+}
