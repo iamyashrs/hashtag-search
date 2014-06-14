@@ -24,6 +24,15 @@ img {
 	background-color: #DD4B38 !important;
 }
 
+
+.gn {
+	background-color: #FFEA00 !important;
+}
+
+.gn > a {
+	color: #000 !important;
+}
+
 .panel-heading>a>i {
 	font-size: 20px;
 	vertical-align: middle;
