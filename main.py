@@ -5,7 +5,6 @@ import threading
 import requests
 import ConfigParser
 from requests_oauthlib import OAuth1
-import geoip2
 from flask import Flask, render_template, request
 
 
