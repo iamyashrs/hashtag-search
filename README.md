@@ -24,3 +24,5 @@ To use the application, create a config.ini file in the root directory of the pr
 	ACCESSTOKEN=
 	[GOOGLE_PLUS]
 	KEY=
+	[Yahoo]
+	app_id =
