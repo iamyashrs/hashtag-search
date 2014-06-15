@@ -5,10 +5,11 @@ import threading
 import requests
 import ConfigParser
 from requests_oauthlib import OAuth1
+import geoip2
 from flask import Flask, render_template, request
 
 
-def get_data(fbs,gps,igs,tws,gns,query):
+def get_data(fbs, gps, igs, tws, gns, query):
     Config = ConfigParser.ConfigParser()
     Config.read("config.ini")
 
@@ -103,23 +104,23 @@ def get_data(fbs,gps,igs,tws,gns,query):
     try:
         fb = q[0].json()
     except:
-        fb = {'data':[]}
+        fb = {'data': []}
     try:
         twitter = q[1].json()
     except:
-        twitter = {'statuses':[]}
+        twitter = {'statuses': []}
     try:
         ig = q[2].json()
     except:
-        ig = {'data':[]}
+        ig = {'data': []}
     try:
         gp = q[3].json()
     except:
-        gp = {'items':[]}
+        gp = {'items': []}
     try:
         gn = q[4].json()
     except:
-        gn = {'responseStatus':0}
+        gn = {'responseStatus': 0}
 
     fbdict = []
     instadict = []
@@ -280,33 +281,104 @@ def get_data(fbs,gps,igs,tws,gns,query):
     return fbdict, instadict, twitdict, gpdict, gndict
 
 
+def get_trending():
+    Config = ConfigParser.ConfigParser()
+    Config.read("config.ini")
+    app_id = Config.get('Yahoo', 'app_id')
+
+    ip = request.remote_addr
+    url = "http://freegeoip.net/json/" + ip
+    result = requests.get(url)
+
+    results = result.json()
+    area = results['country_name']
+
+    if not app_id:
+        raise NotImplementedError('WOEID App Id is empty.')
+    if area == 'Reserved':
+        area = 'Delhi'
+
+    url = 'http://where.yahooapis.com/v1/places.q(%s)?appid=%s&format=json' % (area, app_id)
+
+    r = requests.get(url)
+    json = r.json()
+    places = json['places']
+    place = places['place'][0]
+
+    if place:
+        woeid = place['woeid']
+        name = place['name']
+    else:
+        woeid = 1
+
+    app_key = Config.get('Twitter', 'app_key')
+    app_secret = Config.get('Twitter', 'app_secret')
+    access_token = Config.get('Twitter', 'access_token')
+    access_token_secret = Config.get('Twitter', 'access_token_secret')
+    url = 'https://api.twitter.com/1.1/trends/place.json?id=' + str(woeid)
+    auth = OAuth1(app_key, app_secret, access_token, access_token_secret)
+    result = requests.get(url, auth=auth)
+    results = result.json()
+    trends = []
+    for i in results[0]['trends']:
+        q = {}
+        q['query'] = i['query']
+        q['name'] = i['name']
+        trends.append(q)
+
+    return trends
+
+
 app = Flask(__name__)
 
 
 @app.route('/')
 def index():
     query = request.args.get('query')
-    query = request.args.get('query')
     fb = request.args.get('fb')
     gp = request.args.get('gp')
     ig = request.args.get('ig')
     tw = request.args.get('tw')
     gn = request.args.get('gn')
-    total=sum(1 for e in [fb,gp,ig,tw,gn] if e)
+    total = sum(1 for e in [fb, gp, ig, tw, gn] if e)
     if not gn:
-        if total==4: col=3; totalcol = "12"
-        elif total==3: col=4; totalcol = "12"
-        elif total==2: col=6; totalcol = "8 col-md-offset-2"
-        elif total==1: col=12; totalcol = "4 col-md-offset-4"
+        if total == 4:
+            col = 3;
+            totalcol = "12"
+        elif total == 3:
+            col = 4;
+            totalcol = "12"
+        elif total == 2:
+            col = 6;
+            totalcol = "8 col-md-offset-2"
+        elif total == 1:
+            col = 12;
+            totalcol = "4 col-md-offset-4"
     else:
-        if total==5: col=3; totalcol = "10"; ncol=2
-        elif total==4: col=4; totalcol = "9"; ncol=3
-        elif total==3: col=6; totalcol = "8"; ncol=4
-        elif total==2: col=12; totalcol = "4 col-md-offset-2"; ncol=4
-        elif total==1: col=4; totalcol = "8"; ncol='4 col-md-offset-4'
+        if total == 5:
+            col = 3;
+            totalcol = "10";
+            ncol = 2
+        elif total == 4:
+            col = 4;
+            totalcol = "9";
+            ncol = 3
+        elif total == 3:
+            col = 6;
+            totalcol = "8";
+            ncol = 4
+        elif total == 2:
+            col = 12;
+            totalcol = "4 col-md-offset-2";
+            ncol = 4
+        elif total == 1:
+            col = 4;
+            totalcol = "8";
+            ncol = '4 col-md-offset-4'
     if query:
         query = ''.join(e for e in query if e.isalnum())
-        fbdata, igdata, twdata, gpdata, gndata = get_data(fb,gp,ig,tw,gn,query)
+        fbdata, igdata, twdata, gpdata, gndata = get_data(fb, gp, ig, tw, gn, query)
+    if query is None: trends = get_trending()
     return render_template('index.html', **locals())
 
 

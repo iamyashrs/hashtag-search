@@ -38,6 +38,16 @@
 			    <input type="checkbox" name="gn" {%if gn%}checked="true"{%endif%}> Google News
 			  </label>
 			</div>
+			<div class="sns">
+			{% if trends %}
+			<ul class="list-inline" style="font-size: 11px;">
+			<h3>#trends</h3>
+			{% for i in trends %}
+				<li><a href="/?query={{ i['query'] }}&fb=on&gp=on&ig=on&tw=on">{{ i['name'] }}</a></li>
+			{% endfor %}
+			{% endif %}
+			</ul>
+			</div>
 
 		</form>
 	</div>
